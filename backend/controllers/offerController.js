@@ -1,7 +1,6 @@
 const mongoose= require("mongoose");
 const jwt= require("jsonwebtoken");
 const Offer= require("../models/OfferModel");
-const { GiEvilWings } = require("react-icons/gi");
 const e = require("express");
 
 //route: domain/quote/create
