@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   // 🔄 Restore login on refresh
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-    
 
     if (token) {
       setIsLoggedIn(true);
@@ -42,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 
       // Store token
       sessionStorage.setItem("token", token);
-      sessionStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(user));
 
       // Attach token to axios for future requests
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;

@@ -7,11 +7,12 @@ import ViewEditSearch from "../Quotation/ViewEditSearch";
 import Login from "../Authorisation/Login";
 import Signup from "../Authorisation/Signup";
 import ProtectedRoute from "./ProtectedRoute";
+import PreviewQuotation from "../component/PreviewQuotation";
 const router = createBrowserRouter([
-   {
-        path: "/",
-        element: <Home />,
-      },
+  {
+    path: "/",
+    element: <Home />,
+  },
   {
     path: "/login",
     element: <Login />,
@@ -25,7 +26,6 @@ const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
-     
       {
         path: "/quote_make",
         element: <Createquotation />,
@@ -34,9 +34,12 @@ const router = createBrowserRouter([
         path: "/view_quote",
         element: <ViewEditSearch />,
       },
+      {
+        path: "/preview_quote",
+        element: <PreviewQuotation />,
+      },
     ],
   },
 ]);
-
 
 export default router;

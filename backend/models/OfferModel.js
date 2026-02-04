@@ -20,6 +20,10 @@ const itemSchema = new mongoose.Schema(
     total: {
       type: Number,
       required: true
+    },
+    delievery:{
+      type: String,
+      default:'N/A'
     }
   },
   { _id: false }
@@ -47,6 +51,12 @@ const offerSchema = new mongoose.Schema(
     quoteDate: {
       type: Date,
       required: true
+    },
+    kindAttention:{
+      type:String
+    },
+    subject:{
+      type:String
     },
     items: {
       type: [itemSchema],

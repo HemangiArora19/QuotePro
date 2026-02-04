@@ -20,6 +20,8 @@ export const OfferProvider = ({ children }) => {
     clientAddress,
     quoteNumber,
     quoteDate,
+    kindAttention,
+    subject,
     items,
     subtotal,
     taxRate,
@@ -35,7 +37,7 @@ export const OfferProvider = ({ children }) => {
       }
 
       const response = await api.post("/offer/create", {
-        clientName,clientEmail,clientAddress,quoteNumber,quoteDate,items,subtotal,taxRate,taxAmount,notes,createdBy: user?.id,
+        clientName,clientEmail,clientAddress,quoteNumber,quoteDate,kindAttention,subject,items,subtotal,taxRate,taxAmount,notes,createdBy: user?.id,
       });
 
       setNewoffer(response.data);

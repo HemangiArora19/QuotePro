@@ -21,11 +21,10 @@ connectDb()
 app.get("/", (req, res) => {
     res.send("this is the main server")
 })
-
-app.listen(8080, () => {
-    console.log("Server running on port 8080")
-})
-// user
 app.use("/user",userRoute)
 //for offer. 
 app.use("/offer",offerRoute)
+app.listen(8080, () => {
+    console.log("Server running on port 8080")
+})
+

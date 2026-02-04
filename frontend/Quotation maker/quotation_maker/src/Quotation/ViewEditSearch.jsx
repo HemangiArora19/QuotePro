@@ -1,14 +1,3 @@
-// import React from 'react'
-
-// const ViewEditSearch = () => {
-//   return (
-//     <div>ViewEditSearch</div>
-//   )
-// }
-
-// export default ViewEditSearch
-
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '../Navbar/Navbar';
 import { useAuth } from '../context/Auth/authContext';
@@ -21,8 +10,9 @@ export default function ViewEditSearch() {
   const [showPreview, setShowPreview] = useState(false);
   const [quotations, setQuotations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigator= useNavigate;
-const user= sessionStorage.getItem("user");
+  const navigator= useNavigate();
+
+const user= localStorage.getItem("user");
 
   // Fetch quotations from API
   useEffect(() => {
@@ -64,10 +54,14 @@ return;
     return matchesSearch;
   });
 
-  const handlePreview = (quotation) => {
-    setSelectedQuotation(quotation);
-    setShowPreview(true);
-  };
+const handlePreview = (quotation) => {
+    navigator("/preview_quote", {
+      state: { quotation }
+    });
+  }
+
+
+
 
   const handleEdit = (id) => {
     alert(`Edit quotation ${id} - This would navigate to edit page`);

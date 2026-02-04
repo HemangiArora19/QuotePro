@@ -6,7 +6,7 @@ const e = require("express");
 
 //route: domain/quote/create
 const createOffer=async(req,res)=>{
-    const {clientName,clientEmail,clientAddress,quoteNumber,quoteDate,items,subtotal,taxRate,taxAmount,notes}= req.body
+    const {clientName,clientEmail,clientAddress,quoteNumber,quoteDate,kindAttention,subject,items,subtotal,taxRate,taxAmount,notes}= req.body
     const createdBy= req.user.id; //from auth middleware
     try{
         if(!clientName||!clientEmail||!clientAddress||!quoteNumber||!quoteDate||!items||!subtotal){
@@ -25,6 +25,8 @@ const createOffer=async(req,res)=>{
             clientAddress,
             quoteNumber,
             quoteDate,
+            kindAttention,
+            subject,
             items,
             subtotal,
             taxRate,
@@ -59,7 +61,7 @@ const editOffer=async(req,res)=>{
     //get all the detaisn from the body
     const {clientName,clientEmail,clientAddress,quoteDate,quoteNumber,items,subtotal,taxRate,taxAmount,notes}=req.body;
     // validate the data
-    if(!clientEmail||!clientName||!clientAddress||!quoteDate||!quoteNumber||!items||!subtotal){
+    if(!clientEmail||!clientName||!clientAddress||!quoteDate||!quoteNumber||!items||!subtotal||!kindAttention||!subject){
         return res.status(400).send("Pls enter all the details")
     }
     //id ofFERIs is not there
@@ -74,6 +76,8 @@ const editOffer=async(req,res)=>{
         clientAddress,
         quoteDate,
         quoteNumber,
+        kindAttention,
+        subject,
         items,
         subtotal,
         taxRate,

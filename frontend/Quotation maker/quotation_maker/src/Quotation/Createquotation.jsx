@@ -24,11 +24,11 @@
 //   const handleItemChange = (index, field, value) => {
 //     const newItems = [...items];
 //     newItems[index][field] = value;
-    
+
 //     if (field === 'qty' || field === 'rate') {
 //       newItems[index].total = calculateItemTotal(newItems[index].qty, newItems[index].rate);
 //     }
-    
+
 //     setItems(newItems);
 //   };
 
@@ -54,8 +54,8 @@
 //       document.getElementById('preview')?.scrollIntoView({ behavior: 'smooth' });
 //     }, 100);
 //   };
-  // const {user}= useAuth();
-  // const{createOffer}=useOffer();
+// const {user}= useAuth();
+// const{createOffer}=useOffer();
 // // handle form submission
 // const handleSubmit=async()=>{
 //   try{
@@ -118,7 +118,6 @@
 
 //         {/* Form Container */}
 //         <div className="bg-white rounded-2xl shadow-xl p-8">
-         
 
 //           {/* Client Information */}
 //           <div className="mb-8">
@@ -417,130 +416,151 @@
 
 // export default Createquotation
 
-
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import Swal from "sweetalert2";
-  
+
 import { useNavigate } from "react-router";
-import { useAuth } from '../context/Auth/authContext';
-import { useOffer } from '../context/Offer/offerContext';
+import { useAuth } from "../context/Auth/authContext";
+import { useOffer } from "../context/Offer/offerContext";
 export default function CreateQuotation() {
-  const {user}= useAuth();
-  const{createOffer}=useOffer();
+  const { user } = useAuth();
+  const { createOffer } = useOffer();
   const navigate = useNavigate();
-  const [clientName, setClientName] = useState('');
-  const [clientEmail, setClientEmail] = useState('');
-  const [clientAddress, setClientAddress] = useState('');
-  const [quoteNumber, setQuoteNumber] = useState('QT-2025-001');
+  const [clientName, setClientName] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientAddress, setClientAddress] = useState("");
+  const [kindAttention, setKindAttention] = useState("");
+  const [quoteNumber, setQuoteNumber] = useState("QT-2025-001");
   const [quoteDate, setQuoteDate] = useState(() => {
     const today = new Date();
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   });
-  
-  const [notes, setNotes] = useState('');
+
+  const [notes, setNotes] = useState("");
   const [taxRate, setTaxRate] = useState(0);
   const [items, setItems] = useState([
-    { desc: '', qty: 1, rate: 0, discount: 0, total: 0 }
+    { desc: "", qty: 1, rate: 0, discount: 0, total: 0, delievery: "" },
   ]);
   const [showPreview, setShowPreview] = useState(false);
-
+  const [subject, setSubject] = useState("");
   const calculateItemTotal = (qty, rate, discount) => {
     const subtotal = (parseInt(qty) || 0) * (parseFloat(rate) || 0);
-    const discountAmount = (subtotal*parseFloat(discount) || 0)/100;
+    const discountAmount = (subtotal * parseFloat(discount) || 0) / 100;
     return Math.max(0, subtotal - discountAmount);
   };
 
   const handleItemChange = (index, field, value) => {
     const newItems = [...items];
-    
-    if (field === 'qty') {
+
+    if (field === "qty") {
       newItems[index][field] = parseInt(value) || 0;
-    } else if (field === 'rate' || field === 'discount') {
+    } else if (field === "rate" || field === "discount") {
       newItems[index][field] = parseFloat(value) || 0;
     } else {
       newItems[index][field] = value;
     }
-    
-    if (field === 'qty' || field === 'rate' || field === 'discount') {
+
+    if (field === "qty" || field === "rate" || field === "discount") {
       newItems[index].total = calculateItemTotal(
-        newItems[index].qty, 
-        newItems[index].rate, 
-        newItems[index].discount
+        newItems[index].qty,
+        newItems[index].rate,
+        newItems[index].discount,
       );
     }
-    
+
     setItems(newItems);
   };
 
   const addItem = () => {
-    setItems([...items, { desc: '', qty: 1, rate: 0, discount: 0, total: 0 }]);
+    setItems([
+      ...items,
+      { desc: "", qty: 1, rate: 0, discount: 0, total: 0, delievery: "" },
+    ]);
   };
 
   const removeItem = (index) => {
     if (items.length > 1) {
       setItems(items.filter((_, i) => i !== index));
     } else {
-      alert('At least one item is required');
+      alert("At least one item is required");
     }
   };
 
-  const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
+  const subtotal = items.reduce(
+    (sum, item) => sum + (parseFloat(item.total) || 0),
+    0,
+  );
   const taxAmount = (subtotal * taxRate) / 100;
   const total = subtotal + taxAmount;
 
   const handlePreview = () => {
     setShowPreview(true);
     setTimeout(() => {
-      document.getElementById('preview')?.scrollIntoView({ behavior: 'smooth' });
+      document
+        .getElementById("preview")
+        ?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   };
 
   const handleSubmit = async () => {
     // Validation
-  
 
     // API call would go here
-     try{
-        if (!clientName) {
+    try {
+      if (!clientName) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Please enter client name",
+        });
+        return;
+      }
+      if (items.filter((item) => item.desc).length === 0) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Please add at least one item",
+        });
+        return;
+      }
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      await createOffer(
+        clientName,
+        clientEmail,
+        clientAddress,
+        quoteNumber,
+        quoteDate,
+        kindAttention,
+        subject,
+        items,
+        subtotal,
+        taxRate,
+        taxAmount,
+        notes,
+      );
       Swal.fire({
-    icon: "error",
-    title: "Error",
-    text: "Please enter client name",
-  });
-      return;
+        icon: "success",
+        title: "Success",
+        text: "Quotation Created Successfully",
+      });
+      navigate("/view_quote");
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text:
+          err?.response?.data?.message ||
+          err.message ||
+          "Failed to create quotation",
+      });
     }
-    if (items.filter(item => item.desc).length === 0) {
-       Swal.fire({
-    icon: "error",
-    title: "Error",
-    text: "Please add at least one item",
-  });
-      return;
-    }
-    const token= sessionStorage.getItem("token");
-    if(!token){
-      navigate('/login')
-      return;
-    }
-   await createOffer(
-     clientName,clientEmail,clientAddress,quoteNumber,quoteDate,items,subtotal,taxRate,taxAmount,notes
-    );
-    Swal.fire({
-      icon:"success",
-      title:"Success",
-      text:"Quotation Created Successfully"
-    })
-    navigate('/view_quote');
-}catch (err) {
-  Swal.fire({
-    icon: "error",
-    title: "Error",
-    text: err?.response?.data?.message || err.message || "Failed to create quotation",
-  });
-}
   };
 
   return (
@@ -565,8 +585,12 @@ export default function CreateQuotation() {
       <div className="max-w-6xl mx-auto px-6 py-10">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Create Quotation</h1>
-          <p className="text-gray-600">Fill in the details to generate your professional quotation</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Create Quotation
+          </h1>
+          <p className="text-gray-600">
+            Fill in the details to generate your professional quotation
+          </p>
         </div>
 
         {/* Form Container */}
@@ -574,12 +598,16 @@ export default function CreateQuotation() {
           {/* Client Information */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-              <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+              <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center mr-3 text-sm">
+                1
+              </span>
               Client Information
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Client Name *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Client Name *
+                </label>
                 <input
                   type="text"
                   value={clientName}
@@ -589,7 +617,9 @@ export default function CreateQuotation() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Client Email</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Client Email
+                </label>
                 <input
                   type="email"
                   value={clientEmail}
@@ -599,17 +629,23 @@ export default function CreateQuotation() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Client Address</label>
-                <input
-                  type="text"
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Client Address
+                </label>
+                <textarea
                   value={clientAddress}
                   onChange={(e) => setClientAddress(e.target.value)}
                   placeholder="Client Address"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg
+             focus:ring-2 focus:ring-blue-500 focus:border-transparent
+             transition whitespace-pre-line text-sm resize-none"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Quotation Number *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Quotation Number *
+                </label>
                 <input
                   type="text"
                   value={quoteNumber}
@@ -618,11 +654,35 @@ export default function CreateQuotation() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Date *
+                </label>
                 <input
                   type="date"
                   value={quoteDate}
                   onChange={(e) => setQuoteDate(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Kind Attention *
+                </label>
+                <input
+                  type="text"
+                  value={kindAttention}
+                  onChange={(e) => setKindAttention(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Subject *
+                </label>
+                <input
+                  type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                 />
               </div>
@@ -632,7 +692,9 @@ export default function CreateQuotation() {
           {/* Items/Services */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-              <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+              <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center mr-3 text-sm">
+                2
+              </span>
               Items/Services
             </h2>
 
@@ -643,61 +705,97 @@ export default function CreateQuotation() {
               <div className="col-span-2 text-center">Rate (₹)</div>
               <div className="col-span-2 text-center">Discount (₹)</div>
               <div className="col-span-1 text-center">Amount (₹)</div>
-              <div className="col-span-1"></div>
+              <div className="col-span-1 text-center">Delievery</div>
+              <div className="col-span-1 "></div>
             </div>
 
             {items.map((item, index) => (
-              <div key={index} className="grid grid-cols-12 gap-3 mb-4 items-end">
+              <div
+                key={index}
+                className="grid grid-cols-12 gap-3 mb-4 items-end"
+              >
                 <div className="col-span-12 lg:col-span-4">
-                  <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
                   <input
                     type="text"
                     value={item.desc}
-                    onChange={(e) => handleItemChange(index, 'desc', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(index, "desc", e.target.value)
+                    }
                     placeholder="Enter service or product"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   />
                 </div>
                 <div className="col-span-3 lg:col-span-2">
-                  <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">Qty</label>
+                  <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">
+                    Qty
+                  </label>
                   <input
                     type="number"
                     value={item.qty}
-                    onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(index, "qty", e.target.value)
+                    }
                     min="1"
                     step="1"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   />
                 </div>
                 <div className="col-span-3 lg:col-span-2">
-                  <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">Rate</label>
+                  <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">
+                    Rate
+                  </label>
                   <input
                     type="number"
                     value={item.rate}
-                    onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(index, "rate", e.target.value)
+                    }
                     min="0"
                     step="0.01"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   />
                 </div>
                 <div className="col-span-3 lg:col-span-2">
-                  <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">Discount</label>
+                  <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">
+                    Discount
+                  </label>
                   <input
                     type="number"
                     value={item.discount}
-                    onChange={(e) => handleItemChange(index, 'discount', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(index, "discount", e.target.value)
+                    }
                     min="0"
                     step="0.01"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   />
                 </div>
                 <div className="col-span-2 lg:col-span-1">
-                  <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">Amount</label>
+                  <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">
+                    Amount
+                  </label>
                   <input
                     type="text"
                     value={`₹${item.total.toFixed(2)}`}
                     readOnly
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 font-semibold"
+                  />
+                </div>
+                <div className="col-span-2 lg:col-span-1">
+                  <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">
+                    Delievery
+                  </label>
+                  <input
+                    type="text"
+                    value={item.delievery}
+                    onChange={(e) =>
+                      handleItemChange(index, "delievery", e.target.value)
+                    }
+                    placeholder="Delievery details"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   />
                 </div>
                 <div className="col-span-1 lg:col-span-1">
@@ -725,14 +823,20 @@ export default function CreateQuotation() {
               <div className="w-full md:w-96 space-y-4">
                 <div className="flex justify-between items-center text-gray-700">
                   <span className="font-medium">Subtotal:</span>
-                  <span className="text-xl font-bold">₹{subtotal.toFixed(2)}</span>
+                  <span className="text-xl font-bold">
+                    ₹{subtotal.toFixed(2)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <label className="font-medium text-gray-700">Tax Rate (%):</label>
+                  <label className="font-medium text-gray-700">
+                    Tax Rate (%):
+                  </label>
                   <input
                     type="number"
                     value={taxRate}
-                    onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      setTaxRate(parseFloat(e.target.value) || 0)
+                    }
                     min="0"
                     max="100"
                     step="0.1"
@@ -741,11 +845,17 @@ export default function CreateQuotation() {
                 </div>
                 <div className="flex justify-between items-center text-gray-700">
                   <span className="font-medium">Tax Amount:</span>
-                  <span className="text-xl font-bold">₹{taxAmount.toFixed(2)}</span>
+                  <span className="text-xl font-bold">
+                    ₹{taxAmount.toFixed(2)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center pt-4 border-t-2 border-gray-300">
-                  <span className="text-xl font-bold text-gray-800">Total:</span>
-                  <span className="text-3xl font-bold text-blue-600">₹{total.toFixed(2)}</span>
+                  <span className="text-xl font-bold text-gray-800">
+                    Total:
+                  </span>
+                  <span className="text-3xl font-bold text-blue-600">
+                    ₹{total.toFixed(2)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -754,7 +864,9 @@ export default function CreateQuotation() {
           {/* Notes/Terms */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-              <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center mr-3 text-sm">3</span>
+              <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center mr-3 text-sm">
+                3
+              </span>
               Notes & Terms
             </h2>
             <textarea
@@ -800,25 +912,42 @@ export default function CreateQuotation() {
                 <div className="border-b-4 border-blue-600 pb-6 mb-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h1 className="text-3xl font-bold text-gray-800 mb-2">Your Company Name</h1>
+                      <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                        Your Company Name
+                      </h1>
                       <div className="text-gray-600 text-sm">
                         <p>company@example.com</p>
                         <p>+91 12345 67890</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-bold mb-2">QUOTATION</div>
-                      <p className="text-sm text-gray-600"><span className="font-semibold">Quote #:</span> {quoteNumber}</p>
-                      <p className="text-sm text-gray-600"><span className="font-semibold">Date:</span> {quoteDate}</p>
+                      <div className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-bold mb-2">
+                        QUOTATION
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold">Quote #:</span>{" "}
+                        {quoteNumber}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold">Date:</span> {quoteDate}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="mb-6">
-                  <h3 className="font-semibold text-gray-700 text-sm mb-1">Bill To:</h3>
-                  <p className="font-bold text-gray-800 text-lg">{clientName || 'Client Name'}</p>
-                  {clientEmail && <p className="text-gray-600 text-sm">{clientEmail}</p>}
-                  {clientAddress && <p className="text-gray-600 text-sm">{clientAddress}</p>}
+                  <h3 className="font-semibold text-gray-700 text-sm mb-1">
+                    Bill To:
+                  </h3>
+                  <p className="font-bold text-gray-800 text-lg">
+                    {clientName || "Client Name"}
+                  </p>
+                  {clientEmail && (
+                    <p className="text-gray-600 text-sm">{clientEmail}</p>
+                  )}
+                  {clientAddress && (
+                    <p className="text-gray-600 text-sm">{clientAddress}</p>
+                  )}
                 </div>
 
                 <table className="w-full mb-6">
@@ -832,21 +961,36 @@ export default function CreateQuotation() {
                     </tr>
                   </thead>
                   <tbody>
-                    {items.filter(item => item.desc).length > 0 ? (
-                      items.filter(item => item.desc).map((item, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="py-3 px-2">{item.desc}</td>
-                          <td className="py-3 px-2 text-center">{item.qty}</td>
-                          <td className="py-3 px-2 text-right">₹{parseFloat(item.rate).toFixed(2)}</td>
-                          <td className="py-3 px-2 text-right text-green-600">
-                            {item.discount > 0 ? `-₹${parseFloat(item.discount).toFixed(2)}` : '-'}
-                          </td>
-                          <td className="py-3 px-2 text-right font-bold">₹{parseFloat(item.total).toFixed(2)}</td>
-                        </tr>
-                      ))
+                    {items.filter((item) => item.desc).length > 0 ? (
+                      items
+                        .filter((item) => item.desc)
+                        .map((item, index) => (
+                          <tr key={index} className="border-b">
+                            <td className="py-3 px-2">{item.desc}</td>
+                            <td className="py-3 px-2 text-center">
+                              {item.qty}
+                            </td>
+                            <td className="py-3 px-2 text-right">
+                              ₹{parseFloat(item.rate).toFixed(2)}
+                            </td>
+                            <td className="py-3 px-2 text-right text-green-600">
+                              {item.discount > 0
+                                ? `-₹${parseFloat(item.discount).toFixed(2)}`
+                                : "-"}
+                            </td>
+                            <td className="py-3 px-2 text-right font-bold">
+                              ₹{parseFloat(item.total).toFixed(2)}
+                            </td>
+                          </tr>
+                        ))
                     ) : (
                       <tr>
-                        <td colSpan="5" className="py-4 text-center text-gray-500">No items added</td>
+                        <td
+                          colSpan="5"
+                          className="py-4 text-center text-gray-500"
+                        >
+                          No items added
+                        </td>
                       </tr>
                     )}
                   </tbody>
@@ -871,8 +1015,12 @@ export default function CreateQuotation() {
 
                 {notes && (
                   <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <h3 className="font-bold text-gray-800 mb-2">Notes & Terms:</h3>
-                    <p className="text-gray-700 whitespace-pre-line text-sm">{notes}</p>
+                    <h3 className="font-bold text-gray-800 mb-2">
+                      Notes & Terms:
+                    </h3>
+                    <p className="text-gray-700 whitespace-pre-line text-sm">
+                      {notes}
+                    </p>
                   </div>
                 )}
               </div>
@@ -883,4 +1031,3 @@ export default function CreateQuotation() {
     </div>
   );
 }
-

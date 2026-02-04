@@ -215,12 +215,13 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../context/Auth/authContext';
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const { isLoggedIn, user,loading } = useAuth();
-
+  const { isLoggedIn,loading } = useAuth();
+const user=JSON.parse(localStorage.getItem("user"));
   const handleLogout = () => {
     setIsLoggedIn(false);
     setShowUserMenu(false);
@@ -259,18 +260,24 @@ if (loading) {
             {isLoggedIn ? (
               <>
                 {/* Logged In Menu */}
-                <a href="#" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
-                  Dashboard
-                </a>
-                <a href="#" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
-                  Quotations
-                </a>
-                <a href="#" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
-                  Invoices
-                </a>
-                <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md font-medium">
-                  + New Quotation
-                </button>
+               <Link to="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
+  Dashboard
+</Link>
+
+<Link to="/view_quote" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
+  Quotations
+</Link>
+
+<Link to="/preview_quote" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
+  Invoices
+</Link>
+
+<Link to="/quote_make">
+  <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md font-medium">
+    + New Quotation
+  </button>
+</Link>
+
 
                 {/* User Menu */}
                 <div className="relative">
@@ -336,21 +343,30 @@ if (loading) {
             ) : (
               <>
                 {/* Not Logged In Menu */}
-                <a href="#" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
-                  Features
-                </a>
-                <a href="#" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
-                  Pricing
-                </a>
-                <a href="#" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
-                  About
-                </a>
-                <button className="px-6 py-2 text-gray-700 hover:text-gray-900 font-medium transition">
-                  Sign In
-                </button>
-                <button className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition shadow-md font-medium">
-                  Sign Up
-                </button>
+               <Link to="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
+  Features
+</Link>
+
+<Link to="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
+  Pricing
+</Link>
+
+<Link to="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
+  About
+</Link>
+
+<Link to="/login">
+  <button className="px-6 py-2 text-gray-700 hover:text-gray-900 font-medium transition">
+    Sign In
+  </button>
+</Link>
+
+<Link to="/signup">
+  <button className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition shadow-md font-medium">
+    Sign Up
+  </button>
+</Link>
+
               </>
             )}
           </div>
