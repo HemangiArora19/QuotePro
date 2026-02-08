@@ -220,9 +220,11 @@ import { Link } from "react-router-dom";
 const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const { isLoggedIn,loading } = useAuth();
+  const { isLoggedIn,loading,logout } = useAuth();
+
 const user=JSON.parse(localStorage.getItem("user"));
   const handleLogout = () => {
+    logout();
     setIsLoggedIn(false);
     setShowUserMenu(false);
     alert('Logged out successfully!');

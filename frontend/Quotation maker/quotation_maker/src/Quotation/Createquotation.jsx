@@ -416,15 +416,19 @@
 
 // export default Createquotation
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-
+import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/Auth/authContext";
 import { useOffer } from "../context/Offer/offerContext";
 export default function CreateQuotation() {
   const { user } = useAuth();
-  const { createOffer } = useOffer();
+  const location = useLocation();
+  const[e,setE]=useState(false)
+  const[id,setId]=useState(null);
+ 
+  const { createOffer,editOffer } = useOffer();
   const navigate = useNavigate();
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
@@ -446,6 +450,7 @@ export default function CreateQuotation() {
   ]);
   const [showPreview, setShowPreview] = useState(false);
   const [subject, setSubject] = useState("");
+
   const calculateItemTotal = (qty, rate, discount) => {
     const subtotal = (parseInt(qty) || 0) * (parseFloat(rate) || 0);
     const discountAmount = (subtotal * parseFloat(discount) || 0) / 100;
@@ -495,7 +500,7 @@ export default function CreateQuotation() {
   );
   const taxAmount = (subtotal * taxRate) / 100;
   const total = subtotal + taxAmount;
-
+console.log(id,e)
   const handlePreview = () => {
     setShowPreview(true);
     setTimeout(() => {
@@ -504,10 +509,27 @@ export default function CreateQuotation() {
         ?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   };
+   useEffect(()=>{
+    if(location?.state?.quotation){
+      setE(true);
+      setId(location.state.quotation._id)
+      setClientName(location.state.quotation.clientName);
+      setClientEmail(location.state.quotation.clientEmail);
+      setClientAddress(location.state.quotation.clientAddress);
+      setKindAttention(location.state.quotation.kindAttention);
+      setQuoteNumber(location.state.quotation.quoteNumber);
+      setSubject(location.state.quotation.subject);
+      setQuoteDate(location.state.quotation.quoteDate.split("T")[0]);
+     
+      setNotes(location.state.quotation.notes);
+      setTaxRate(location.state.quotation.taxRate);
+      setItems(location.state.quotation.items || []);
+      setE(true);
+    }
 
-  const handleSubmit = async () => {
-    // Validation
-
+  },[location])
+const handleSubmit=async()=>{
+  //how wdotion will hpapned indise ths form it self
     // API call would go here
     try {
       if (!clientName) {
@@ -561,6 +583,64 @@ export default function CreateQuotation() {
           "Failed to create quotation",
       });
     }
+
+}
+  const handleEdit = async () => {
+    // Validation
+
+    try {
+      if (!clientName) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Please enter client name",
+        });
+        return;
+      }
+      if (items.filter((item) => item.desc).length === 0) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Please add at least one item",
+        });
+        return;
+      }
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      await editOffer(
+        id,
+        clientName,
+        clientEmail,
+        clientAddress,
+        quoteNumber,
+        quoteDate,
+        kindAttention,
+        subject,
+        items,
+        subtotal,
+        taxRate,
+        taxAmount,
+        notes,
+      );
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Quotation Edited Successfully",
+      });
+      navigate("/view_quote");
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text:
+          err?.response?.data?.message ||
+          err.message ||
+          "Failed to edit quotation",
+      });
+    }
   };
 
   return (
@@ -586,10 +666,10 @@ export default function CreateQuotation() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Create Quotation
+           {e?"Edit Quotation":"Create Quotation"}
           </h1>
           <p className="text-gray-600">
-            Fill in the details to generate your professional quotation
+           { e?"Fill in the details to edit your professional quotation":"Fill in the details to generate your professional quotation"}
           </p>
         </div>
 
@@ -886,12 +966,20 @@ export default function CreateQuotation() {
             >
               Preview Quotation
             </button>
-            <button
+            {e?(<button
+              onClick={handleEdit}
+              className="flex-1 px-8 py-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-bold text-lg shadow-lg"
+            >
+             Edit Quotation
+            </button>)
+              :
+              (<button
               onClick={handleSubmit}
               className="flex-1 px-8 py-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-bold text-lg shadow-lg"
             >
               Create Quotation
-            </button>
+            </button>)
+            }
           </div>
         </div>
 

@@ -32,9 +32,11 @@ const printRef = useRef(null);
 
 
 
-  const handleDownloadPDF = () => {
-    window.print();
-  };
+  const handleDownloadPDF = useReactToPrint({
+  contentRef: printRef,
+  documentTitle: `Quotation-${quotationData.quoteNumber}`,
+  removeAfterPrint: true,
+});
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">

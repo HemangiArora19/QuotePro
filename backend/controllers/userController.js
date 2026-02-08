@@ -6,7 +6,7 @@ const userSignup = async(req, res) => {
 
 
   try{
-    const { name,email,letterpad,password,address,cName,cPhone, } = req.body;
+    const { name,email,letterpad,password,address,cName,cPhone } = req.body;
     if(!email||!name||!password||!letterpad||!address||!cName||!cPhone){
         return res.send("Pls enter all the details")
     }

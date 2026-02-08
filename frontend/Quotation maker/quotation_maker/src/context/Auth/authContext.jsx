@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "../../axios/axios";
+import api from "../../axios/axios";
 
 const AuthContext = createContext(null);
 
@@ -27,9 +28,51 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      const response = await axios.post("/user/login", {
+      const response = await api.post("/user/login", {
         email,
         password,
+      });
+
+      const { token, user } = response.data;
+
+      if (!token) {
+        setError("Login failed");
+        return;
+      }
+
+      // Store token
+      sessionStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Attach token to axios for future requests
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    
+      setUser(user);
+      setIsLoggedIn(true);
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.message || "Something went wrong");
+      throw err;
+    }
+  };
+
+  const signup = async ({
+  name,
+  email,
+  letterpad,
+  password,
+  address,
+  cName,
+  cPhone
+})  => {
+    if (!email || !password||!name||!letterpad||!address||!cName||!cPhone) {
+      setError("Please enter all required fields");
+      return;
+    }
+
+    try {
+      const response = await api.post("/user/signup", {
+        name,email,letterpad,password,address,cName,cPhone
       });
 
       const { token, user } = response.data;
@@ -58,8 +101,11 @@ export const AuthProvider = ({ children }) => {
   // 🚪 LOGOUT
   const logout = () => {
     sessionStorage.removeItem("token");
+    localStorage.removeItem("user");
     delete axios.defaults.headers.common["Authorization"];
     setUser(null);
+    localStorage.removeItem("user");
+ 
     setIsLoggedIn(false);
   };
 
@@ -69,6 +115,7 @@ export const AuthProvider = ({ children }) => {
         user,
         isLoggedIn,
         load,
+        signup,
         login,
         logout,
         error,

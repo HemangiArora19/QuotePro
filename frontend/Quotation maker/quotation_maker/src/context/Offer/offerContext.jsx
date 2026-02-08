@@ -47,10 +47,53 @@ export const OfferProvider = ({ children }) => {
       throw err;
     }
   };
+  const editOffer=async(
+    id,
+    clientName,
+    clientEmail,
+    clientAddress,
+    quoteNumber,
+    quoteDate,
+    kindAttention,
+    subject,
+    items,
+    subtotal,
+    taxRate,
+    taxAmount,
+    notes
+  )=>{
+      try{
+        //valiadtions
+        //id usr us loged in
+        const token = sessionStorage.getItem("token");
+        if(!token){
+          throw new Error("Please login to edit the offer")
+        }
+       const response=await api.post(`/offer/editById/${id}`,{
+       clientName,
+    clientEmail,
+    clientAddress,
+    quoteNumber,
+    quoteDate,
+    kindAttention,
+    subject,
+    items,
+    subtotal,
+    taxRate,
+    taxAmount,
+    notes
+       })
+       return response.data
+
+      }catch(err){
+        console.error(err);
+        throw err;
+      }
+    }
 
   return (
     <OfferContext.Provider
-      value={{ createOffer, newoffer, setNewoffer, offer, setOffer }}
+      value={{ createOffer,editOffer, newoffer, setNewoffer, offer, setOffer }}
     >
       {children}
     </OfferContext.Provider>

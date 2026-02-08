@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/Auth/authContext';
 import Swal from "sweetalert2";
+import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router';
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -109,7 +110,7 @@ navigate('/')
             {/* Sign Up Link */}
             <p className="text-center text-sm text-gray-600">
               Don't have an account? 
-              <a href="#" className="text-blue-600 hover:text-blue-700 font-semibold ml-1">Sign up</a>
+              <Link to="/signup" className="text-blue-600 hover:text-blue-700 font-semibold ml-1">Sign up</Link>
             </p>
           </form>
         </div>

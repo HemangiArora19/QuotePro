@@ -26,7 +26,7 @@ const navigate=useNavigate()
                 Build trust with professional documents. Generate quotations  in seconds with our easy-to-use platform.
               </p>
               <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <button className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg text-lg font-semibold">
+                <button className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg text-lg font-semibold" onClick={()=>(navigate('/quote_make'))}>
                   Create Quotation
                 </button>
                 {/* <button className="px-8 py-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition shadow-lg text-lg font-semibold">

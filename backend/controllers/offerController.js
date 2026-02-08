@@ -58,7 +58,7 @@ const editOffer=async(req,res)=>{
     const offerId= req.params.id
     try{
     //get all the detaisn from the body
-    const {clientName,clientEmail,clientAddress,quoteDate,quoteNumber,items,subtotal,taxRate,taxAmount,notes}=req.body;
+    const {clientName,clientEmail,clientAddress,quoteDate,quoteNumber,kindAttention,subject,items,subtotal,taxRate,taxAmount,notes}=req.body;
     // validate the data
     if(!clientEmail||!clientName||!clientAddress||!quoteDate||!quoteNumber||!items||!subtotal||!kindAttention||!subject){
         return res.status(400).send("Pls enter all the details")
@@ -111,6 +111,16 @@ const getOfferById=async(req,res)=>{
     }catch(err){
         res.status(500).send("Error fetching the offer")
     }
-}                           
+}       
 
-module.exports={createOffer,getOffersByUser,editOffer,getOfferById}
+const deleteOfferById= async(req,res)=>{
+    const offerId= req.params.offerId;
+    try{
+        await Offer.findByIdAndDelete(offerId);
+        res.status(200).send("Offer deleted successfully")
+    }catch(err){
+        res.status(500).send("Error deleting the offer")
+    }
+}
+
+module.exports={createOffer,getOffersByUser,editOffer,getOfferById,deleteOfferById}

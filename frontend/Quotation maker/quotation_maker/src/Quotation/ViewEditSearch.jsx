@@ -3,6 +3,7 @@ import Navbar from '../Navbar/Navbar';
 import { useAuth } from '../context/Auth/authContext';
 import api from '../axios/axios';
 import { useNavigate } from 'react-router';
+import Swal from 'sweetalert2';
 
 export default function ViewEditSearch() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,9 +63,13 @@ const handlePreview = (quotation) => {
 
 
 
-
-  const handleEdit = (id) => {
-    alert(`Edit quotation ${id} - This would navigate to edit page`);
+const [edit,setEdit]=useState(false)
+  const handleEdit = (quotation) => {
+   
+    setEdit(true);
+    navigator("/quote_make", {
+      state: { quotation }
+    });
   };
 
   const handleDelete = async (id) => {
@@ -72,12 +77,27 @@ const handlePreview = (quotation) => {
       try {
         // Replace with actual API call
         // await fetch(`/api/quotations/${id}`, { method: 'DELETE' });
+        //give delog are yoir sure wnt to delete
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, delete it!'
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            const response= await api.delete(`/offer/deleteById/${id}`);
+            Swal.fire('Deleted!', 'Quotation has been deleted.', 'success');
+            setQuotations(quotations.filter(q => q._id !== id));
+          }
+        })
         
-        setQuotations(quotations.filter(q => q.id !== id));
-        alert('Quotation deleted successfully!');
+        
       } catch (error) {
         console.error('Error deleting quotation:', error);
-        alert('Failed to delete quotation');
+       Swal.fire('Error!', 'Failed to delete quotation.', 'error');
       }
     }
   };
@@ -172,7 +192,7 @@ const handlePreview = (quotation) => {
                           View
                         </button>
                         <button
-                          onClick={() => handleEdit(quotation.id)}
+                          onClick={() => handleEdit(quotation)}
                           className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition font-medium text-sm"
                         >
                           <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,7 +201,7 @@ const handlePreview = (quotation) => {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(quotation.id)}
+                          onClick={() => handleDelete(quotation._id)}
                           className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition font-medium text-sm"
                         >
                           <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

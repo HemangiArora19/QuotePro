@@ -1,5 +1,8 @@
-import {React,useEffect,useState} from 'react'
+import React, { useState } from 'react';
 
+import { useAuth } from '../context/Auth/authContext';
+import Swal from 'sweetalert2';
+import { Link } from 'react-router-dom';
 const Signup = () => {
  const [formData, setFormData] = useState({
     name: '',
@@ -13,7 +16,7 @@ const Signup = () => {
   const [letterheadPreview, setLetterheadPreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+const {signup}=useAuth();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -21,6 +24,26 @@ const Signup = () => {
       [name]: value
     }));
   };
+  const uploadLetterhead = async () => {
+  if (!letterhead) return;
+
+  const formData = new FormData();
+  formData.append("file", letterhead);
+  formData.append("upload_preset", "letterhead_preset");
+  formData.append("folder", "quotations/letterheads");
+
+  const res = await fetch(
+    "https://api.cloudinary.com/v1_1/dbj9g0m7c/image/upload",
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+
+  const data = await res.json();
+  return data.secure_url;
+};
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -34,9 +57,10 @@ const Signup = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async(e) => {
+      e.preventDefault();
     // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
+    try{if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match!');
       return;
     }
@@ -46,8 +70,43 @@ const Signup = () => {
       alert('Please fill in all required fields!');
       return;
     }
+    let letterheadUrl = "";
+ if (letterhead) {
+    letterheadUrl = await uploadLetterhead();
+  }
+   //api logic
+   
+   await signup({
+  name: formData.name,
+  email: formData.email,
+  password: formData.password,
 
-    alert(`Sign Up Successful!\n\nName: ${formData.name}\nEmail: ${formData.email}\nCompany Address: ${formData.companyAddress}\nCompany Phone: ${formData.companyPhone}\nLetterhead: ${letterhead ? letterhead.name : 'Not uploaded'}\n\nThis is a demo. In production, this would create your account.`);
+  // 🔥 MATCH BACKEND KEYS
+  letterpad: letterheadUrl,
+  address: formData.companyAddress,
+  cName: formData.name, // or separate company name field
+  cPhone: formData.companyPhone
+});
+
+   
+   
+   Swal.fire({
+    icon: 'success',
+    title: 'Account Created',                                               
+      
+    text: 'Your account has been created successfully! Please log in.',
+    confirmButtonText: 'Go to Login'
+  }).then(() => {
+    window.location.href = '/login';
+  });}catch(err){
+    Swal.fire({
+      icon: 'error',
+      title: 'Signup Failed',
+      text: err.response?.data?.message || 'An error occurred during signup. Please try again.',
+    });
+  }
+
+
   };
 
   return (
@@ -108,14 +167,15 @@ const Signup = () => {
                 <label htmlFor="companyAddress" className="block text-sm font-medium text-gray-700 mb-2">
                   Company Address
                 </label>
-                <input 
-                  type="text" 
+                <textarea
                   id="companyAddress" 
                   name="companyAddress"
                   value={formData.companyAddress}
                   onChange={handleInputChange}
                   placeholder="123 Business St, City"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg
+             focus:ring-2 focus:ring-blue-500 focus:border-transparent
+             transition whitespace-pre-line text-sm resize-none"
                 />
               </div>
 
@@ -282,7 +342,8 @@ const Signup = () => {
 
             {/* Sign Up Button */}
             <button 
-              onClick={handleSubmit}
+             type="button"
+  onClick={handleSubmit}
               className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition shadow-lg font-semibold text-lg mb-6"
             >
               Create Account
@@ -291,7 +352,7 @@ const Signup = () => {
             {/* Sign In Link */}
             <p className="text-center text-sm text-gray-600">
               Already have an account? 
-              <a href="#" className="text-blue-600 hover:text-blue-700 font-semibold ml-1">Sign in</a>
+              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold ml-1">Sign in</Link>
             </p>
           </div>
         </div>
