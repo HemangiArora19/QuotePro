@@ -1,6 +1,6 @@
 const express= require("express")
 const authMiddleWare = require("../middleware/authMiddleware")
-const { createOffer, getOffersByUser, editOffer, getOfferById, deleteOfferById } = require("../controllers/offerController")
+const { createOffer, getOffersByUser, editOffer, getOfferById, deleteOfferById, generateOfferPdf } = require("../controllers/offerController")
 const offerRoute= express.Router()
 //route: domain/quote/create
 offerRoute.post("/create",authMiddleWare,createOffer)
@@ -13,4 +13,6 @@ offerRoute.get("/getById/:offerId",authMiddleWare,getOfferById)
 
 // route:domain/offer/deleteById/:offerId
 offerRoute.delete('/deleteById/:offerId',authMiddleWare,deleteOfferById)
+//domain/offer/pdf
+offerRoute.post("/pdf",authMiddleWare,generateOfferPdf)
 module.exports= offerRoute

@@ -1,7 +1,7 @@
-const mongoose= require("mongoose");
-const jwt= require("jsonwebtoken");
+
+
 const Offer= require("../models/OfferModel");
-const e = require("express");
+const puppeteer = require("puppeteer");
 
 //route: domain/quote/create
 const createOffer=async(req,res)=>{
@@ -122,5 +122,54 @@ const deleteOfferById= async(req,res)=>{
         res.status(500).send("Error deleting the offer")
     }
 }
+//domain/offer/pdf
+const generateOfferPdf=async(req,res)=>{
+try {
+    const { html, fileName } = req.body;
 
-module.exports={createOffer,getOffersByUser,editOffer,getOfferById,deleteOfferById}
+    if (!html) {
+      return res.status(400).json({ message: "HTML is required" });
+    }
+
+    const browser = await puppeteer.launch({
+      headless: "new", // for latest puppeteer
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+
+    const page = await browser.newPage();
+
+    // Set content
+    await page.setContent(html, {
+      waitUntil: "networkidle0",
+    });
+
+    // Generate PDF
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: {
+        top: "20px",
+        right: "20px",
+        bottom: "20px",
+        left: "20px",
+      },
+    });
+
+    await browser.close();
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${fileName}"`,
+      "Content-Length": pdfBuffer.length,
+    });
+
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.log("PDF generation error:", error);
+    res.status(500).json({ message: "Failed to generate PDF" });
+  }
+}
+
+
+
+module.exports={createOffer,getOffersByUser,editOffer,getOfferById,deleteOfferById,generateOfferPdf}

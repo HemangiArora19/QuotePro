@@ -1,6 +1,6 @@
 const express= require("express")
 const authMiddleWare = require("../middleware/authMiddleware")
-const  {userSignup, userLogin}  = require("../controllers/userController")
+const  {userSignup, userLogin, contactEdit, bussEdit}  = require("../controllers/userController")
 const userRoute= express.Router()
 //domain/user/siginup
 userRoute.post("/signup",userSignup)
@@ -12,6 +12,11 @@ userRoute.post("/logout",authMiddleWare,(req,res)=>{
 
     res.status(200).send("Logged out successfully");
 })
+//domain/user/conatactEdit
+userRoute.post("/contactEdit",authMiddleWare,contactEdit)
+//domain/user/bussEdit
+userRoute.post("/bussEdit",authMiddleWare,bussEdit)
+
 
 
 

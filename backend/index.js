@@ -9,10 +9,13 @@ const connectDb = require("./connections/connnection")
 
 //importing user an ooferSchema
 const User= require("./models/UserModel")
-const Offer= require("./models/OfferModel")
+const Offer= require("./models/OfferModel");
+const invoiceRoute = require('./routes/invoiceRoute');
 
 
 app.use(cors())   
+
+app.use(express.json({ limit: "10mb" }));
                    // ✅ invoke cors
 
 app.use(bodyParser.json())           // ✅ parse JSON bodies
@@ -24,6 +27,8 @@ app.get("/", (req, res) => {
 app.use("/user",userRoute)
 //for offer. 
 app.use("/offer",offerRoute)
+//for invoice
+app.use("/invoice",invoiceRoute)
 app.listen(8080, () => {
     console.log("Server running on port 8080")
 })

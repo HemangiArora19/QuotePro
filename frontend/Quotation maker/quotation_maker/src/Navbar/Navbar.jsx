@@ -215,19 +215,33 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../context/Auth/authContext';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 const Navbar = () => {
+  
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { isLoggedIn,loading,logout } = useAuth();
 
 const user=JSON.parse(localStorage.getItem("user"));
+const navigator = useNavigate();
   const handleLogout = () => {
-    logout();
-    setIsLoggedIn(false);
-    setShowUserMenu(false);
-    alert('Logged out successfully!');
+    Swal.fire({
+      title: "Are you sure you want to log out?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, log me out!",
+      cancelButtonText: "No, keep me logged in",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+        navigator("/login");
+        setShowUserMenu(false);
+      }
+    });
   };
 
   // Loading skeleton component for user info
@@ -321,15 +335,10 @@ if (loading) {
                           <UserInfoSkeleton />
                         )}
                       </div>
-                      <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                      <Link  to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
                         My Profile
-                      </a>
-                      <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
-                        Settings
-                      </a>
-                      <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
-                        Billing
-                      </a>
+                      </Link>
+                      
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         <button
                           onClick={handleLogout}
@@ -349,13 +358,7 @@ if (loading) {
   Features
 </Link>
 
-<Link to="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
-  Pricing
-</Link>
 
-<Link to="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
-  About
-</Link>
 
 <Link to="/login">
   <button className="px-6 py-2 text-gray-700 hover:text-gray-900 font-medium transition">
@@ -421,22 +424,20 @@ if (loading) {
                     )}
                   </div>
                 </div>
-                <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
+                <Link to="/" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
                   Dashboard
-                </a>
-                <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
+                </Link>
+                <Link to="/view_quote" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
                   Quotations
-                </a>
-                <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
+                </Link>
+                <Link to="/invoices" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
                   Invoices
-                </a>
-                <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
+                </Link>
+                <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
                   My Profile
-                </a>
-                <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
-                  Settings
-                </a>
-                <button className="w-full mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                </Link>
+                
+                <button className="w-full mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium" onClick={()=>{useNavigate("/quote_make")}}>
                   + New Quotation
                 </button>
                 <button
@@ -449,15 +450,10 @@ if (loading) {
             ) : (
               <>
                 {/* Mobile Not Logged In Menu */}
-                <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
+                <Link to="/" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
                   Features
-                </a>
-                <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
-                  Pricing
-                </a>
-                <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
-                  About
-                </a>
+                </Link>
+               
                 <button className="w-full mt-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
                   Sign In
                 </button>

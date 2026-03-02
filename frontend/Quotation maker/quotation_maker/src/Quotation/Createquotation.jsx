@@ -798,15 +798,17 @@ const handleSubmit=async()=>{
                   <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">
                     Description
                   </label>
-                  <input
-                    type="text"
-                    value={item.desc}
-                    onChange={(e) =>
-                      handleItemChange(index, "desc", e.target.value)
-                    }
-                    placeholder="Enter service or product"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                  />
+                  <textarea
+  rows={8}
+  value={item.desc}
+  onChange={(e) =>
+    handleItemChange(index, "desc", e.target.value)
+  }
+  placeholder="Enter service or product"
+  className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg 
+             focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+             transition text-sm leading-relaxed resize-y"
+/>
                 </div>
                 <div className="col-span-3 lg:col-span-2">
                   <label className="block lg:hidden text-sm font-medium text-gray-700 mb-2">

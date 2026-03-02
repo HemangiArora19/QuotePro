@@ -344,7 +344,7 @@ const {signup}=useAuth();
             <button 
              type="button"
   onClick={handleSubmit}
-              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition shadow-lg font-semibold text-lg mb-6"
+              className="w-full px-6 py-3 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition shadow-lg font-semibold text-lg mb-6"
             >
               Create Account
             </button>

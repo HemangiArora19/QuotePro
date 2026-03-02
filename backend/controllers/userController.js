@@ -98,8 +98,76 @@ const userLogin = async(req, res) => {
     });
   }
 };
+const contactEdit = async (req, res) => {
+  try {
+    const { email, phone, address, id } = req.body;
+
+    // validation
+    if (!email || !phone || !address || !id) {
+      return res.status(400).json({
+        message: "Please enter all the details"
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        email,
+        cPhone: phone,
+        address
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    res.status(200).json({
+      message: "Contact details updated successfully",
+      data: {
+        email: user.email,
+        phone: user.cPhone,
+        address: user.address
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Internal server error"
+    });
+  }
+};
+
+const bussEdit= async(req,res)=>{
+  try{
+   const {companyName,companyLogo,id}=req.body  
+   if(!companyName||!companyLogo){    
+    return res.status(400).json({message:"Pls enter all the details"})
+    }
+    const user= await User.findByIdAndUpdate(id,{
+      cName:companyName,
+      letterpad:companyLogo
+    },{new:true})
+    if(!user){
+      res.status(404).json({message:"User not found"})
+    }
+    res.status(200).json({
+      message:"Business details updated successfully",
+      data:user.email,   
+    })
+  }catch(err){
+    res.status(500).json({message:"Error updating business details", error:err.message})
+  }
+}
+  
 
 module.exports = {
   userSignup,
   userLogin,
+  contactEdit,
+  bussEdit,
 };
