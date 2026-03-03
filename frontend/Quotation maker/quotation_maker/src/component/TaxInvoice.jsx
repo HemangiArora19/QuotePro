@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-
+import api from "../axios/axios";
+import { useLocation } from "react-router-dom";
 // ─── Helpers ────────────────────────────────────────────────────────────────
 const fmt = (n) =>
   "₹" +
@@ -127,39 +128,9 @@ export default function TaxInvoice({ invoiceId }) {
   const [error, setError]     = useState(null);
 
   // ── Fetch from backend, map flat fields → individual states ───────────────
-  useEffect(() => {
-    const url = invoiceId ? `${API_URL}/${invoiceId}` : API_URL;
-    setLoading(true);
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error(`Server error: ${res.status} ${res.statusText}`);
-        return res.json();
-      })
-      .then((raw) => {
-        // inv_num, inv_date, orderRef, dipacthVia, destination → invoice state
-        setInvoice({
-          number:      raw.inv_num,
-          date:        raw.inv_date,
-          orderRef:    raw.orderRef,
-          dispatchVia: raw.dipacthVia,
-          destination: raw.destination,
-        });
+ 
+  
 
-        // buy_name, buy_address, buy_gstno → buyer state
-        setBuyer({
-          name:      raw.buy_name,
-          address:   raw.buy_address,
-          gstin:     raw.buy_gstno,
-          stateCode: raw.buy_gstno?.substring(0, 2) ?? "00",
-        });
-
-        // items[] → items state
-        setItems(raw.items);
-
-        setLoading(false);
-      })
-      .catch((err) => { setError(err.message); setLoading(false); });
-  }, [invoiceId]);
 
   // ── Reconstruct combined data shape for rendering ─────────────────────────
   const data = { invoice, seller, buyer, items };
@@ -193,6 +164,57 @@ export default function TaxInvoice({ invoiceId }) {
   const computed = computeItems(data.items, taxType);
   const totals = computeTotals(computed);
   const gstHalf = (computed[0]?.gstRate || 0) / 2;
+const location=useLocation()
+const [id,setId]=useState("");
+useEffect(()=>{
+setId(location.state?.id)
+},[location])
+useEffect(() => {
+  if (!id) return; // ⛔ don't call API until id exists
+
+  setLoading(true);
+  handlePreview();
+}, [id]);
+
+
+//prevew
+const handlePreview=async()=>{
+  try{
+    const res= await api.get(`/invoice/getById/${id}`)
+    if(res.status!==200){
+     setError(`Failed to fetch invoice: ${res.status} ${res.statusText}`);
+      return;
+    }
+    const inv = res.data.invoice; 
+    console.log(inv)// 👈 important
+
+  // inv_num, inv_date, orderRef, dispatchVia, destination → invoice state
+  setInvoice({
+    number:      inv.inv_num,
+    date:        new Date(inv.inv_date).toLocaleDateString("en-GB"),
+    orderRef:    inv.orderRef,
+    dispatchVia: inv.dispatchVia,
+    destination: inv.destination,
+  });
+
+  // buy_name, buy_address, buy_gstno → buyer state
+  setBuyer({
+    name:      inv.buy_name,
+    address:   inv.buy_address,
+    gstin:     inv.buy_gstno,
+    stateCode: inv.buy_gstno?.substring(0, 2) ?? "00",
+  });
+
+  // items[] → items state
+  setItems(inv.items);
+
+  setLoading(false);
+
+
+  }catch(err){
+    console.log("Preview error:",err)
+  }
+}
 
   return (
     <div className="min-h-screen bg-slate-50 py-8 px-4 font-sans">

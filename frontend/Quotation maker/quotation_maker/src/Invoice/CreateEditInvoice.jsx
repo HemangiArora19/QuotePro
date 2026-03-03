@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Navbar from "../Navbar/Navbar";
+import api from "../axios/axios";
+import Swal from "sweetalert2";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const GST_RATES = [0, 5, 12, 18, 28];
@@ -103,26 +106,63 @@ export default function CreateEditInvoice({ onSubmit }) {
     setErrors({});
     setSubmitting(true);
     const payload = {
-      ...invoice,
-      ...buyer,
-      buy_gstno: buyer.buy_gstno.toUpperCase(),
-      items: items.map((it) => ({
-        ...it,
-        qty:     Number(it.qty),
-        rate:    Number(it.rate),
-        gstRate: Number(it.gstRate),
-      })),
+  inv_num: invoice.inv_num,
+  inv_date: invoice.inv_date,
+  orderRef: invoice.orderRef,
+  dispatchVia: invoice.dipacthVia, // ⚠️ spelling fix
+  destination: invoice.destination,
+
+  buy_name: buyer.buy_name,
+  buy_address: buyer.buy_address,
+  buy_gstno: buyer.buy_gstno.toUpperCase(),
+
+  items: items.map(it => {
+    const amount = Number(it.qty) * Number(it.rate);
+    const gstAmount = amount * Number(it.gstRate) / 100;
+    const total = amount + gstAmount;
+
+    return {
+      description: it.description,
+      hsnCode: it.hsnCode,
+      qty: Number(it.qty),
+      unit: it.unit,
+      rate: Number(it.rate),
+      gstRate: Number(it.gstRate),
+
+      // required by ItemSchema
+      amount,
+      gstAmount,
+      total
     };
+  }),
+
+  totals: {
+    subtotal: items.reduce((s, it) => s + (Number(it.qty) * Number(it.rate)), 0),
+    gst: items.reduce((s, it) => {
+      const amt = Number(it.qty) * Number(it.rate);
+      return s + (amt * Number(it.gstRate) / 100);
+    }, 0),
+    total: items.reduce((s, it) => {
+      const amt = Number(it.qty) * Number(it.rate);
+      const gst = amt * Number(it.gstRate) / 100;
+      return s + amt + gst;
+    }, 0),
+  },
+
+  status: "draft"
+};
+
     try {
       if (onSubmit) {
         await onSubmit(payload);
       } else {
-        const res = await fetch("/api/invoice", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error(`Server error ${res.status}`);
+        const res = await api.post("/invoice/create",payload);
+        if (!res) throw new Error(`Server error ${res.status}`);
+        Swal.fire({
+          icon:"success",
+          title:"Invoice Created",
+          text:"Your invoice has been created successfully."
+        })
       }
       setSubmitted(true);
     } catch (err) {
@@ -163,7 +203,7 @@ export default function CreateEditInvoice({ onSubmit }) {
         <button
           onClick={() => {
             setSubmitted(false);
-            setInvoice({ inv_num: "", inv_date: todayStr(), orderRef: "Verbal Order", dipacthVia: "By Courier", destination: "" });
+            setInvoice({ inv_num: "", inv_date: todayStr(), orderRef: "Verbal Order", dispatchVia: "By Courier", destination: "" });
             setBuyer({ buy_name: "", buy_address: "", buy_gstno: "" });
             setItems([{ ...EMPTY_ITEM }]);
           }}
@@ -179,23 +219,7 @@ export default function CreateEditInvoice({ onSubmit }) {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
 
       {/* ── Navbar ── */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">L</span>
-            </div>
-            <span className="text-2xl font-bold text-gray-800">LeoChem</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="px-6 py-2 text-gray-600 hover:text-gray-800 transition font-medium"
-          >
-            ← Back
-          </button>
-        </div>
-      </nav>
+      <Navbar/>
 
       <div className="max-w-5xl mx-auto px-6 py-10">
 

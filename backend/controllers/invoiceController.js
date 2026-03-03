@@ -156,18 +156,33 @@ const editInvoiceById = async (req, res) => {
   }
 };
 //domain/invoice/deleteById/:id
-const deleteInvoiceById=async(req,res)=>{
-    const {id}=req.params
-    try{
-        const invoice= await Invoice.findByIdAndUpdate(id,{isDeleted:true},{new:true})
-        if(!invoice){
-            return res.status(404).json({message:"Invoice not found"})
-        }
+const deleteInvoiceById = async (req, res) => {
+  const { id } = req.params;
 
-    }catch(err){
-        res.status(500).json({message:"Server error",error:err.message})
+  try {
+    const findInv=await Invoice.findById(id)
+    if(!findInv){
+        return res.status(404).json({message:"Invoice not found"})
+       
     }
-}
+    const invoice = await Invoice.findByIdAndDelete(id);
+     
+
+    
+
+    return res.status(200).json({
+      message: "Invoice deleted successfully",
+      invoice
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      message: "Server error",
+      error: err.message
+    });
+  }
+};
+
 module.exports={
     createInvoice,
     getInvoice,

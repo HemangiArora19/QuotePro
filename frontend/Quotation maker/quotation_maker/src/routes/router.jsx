@@ -11,6 +11,7 @@ import PreviewQuotation from "../component/PreviewQuotation";
 import MyProfile from "../profile/MyProfile";
 import TaxInvoice from "../component/TaxInvoice";
 import CreateEditInvoice from "../Invoice/CreateEditInvoice";
+import DisplayInvoice from "../Invoice/DisplayInvoice";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -52,7 +53,12 @@ path:"/preview_invoice",
       {
         path:"/create_invoice",
         element:<CreateEditInvoice/>
+      },
+      {
+        path:"/display_invoice",
+        element:<DisplayInvoice/>
       }
+      
     ],
   },
 ]);
