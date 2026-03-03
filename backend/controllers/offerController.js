@@ -1,8 +1,7 @@
 
 
 const Offer= require("../models/OfferModel");
-const puppeteer = require("puppeteer");
-
+const puppeteer = require("puppeteer-core");
 //route: domain/quote/create
 const createOffer=async(req,res)=>{
     const {clientName,clientEmail,clientAddress,quoteNumber,quoteDate,kindAttention,subject,items,subtotal,taxRate,taxAmount,notes}= req.body
@@ -123,6 +122,8 @@ const deleteOfferById= async(req,res)=>{
     }
 }
 //domain/offer/pdf
+
+
 const generateOfferPdf = async (req, res) => {
   try {
     const { html, fileName } = req.body;
@@ -132,7 +133,8 @@ const generateOfferPdf = async (req, res) => {
     }
 
     const browser = await puppeteer.launch({
-      headless: "new",
+      executablePath: process.env.CHROME_BIN || "/usr/bin/chromium-browser",
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
@@ -158,7 +160,6 @@ const generateOfferPdf = async (req, res) => {
     res.set({
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="${fileName || "offer.pdf"}"`,
-      "Content-Length": pdfBuffer.length,
     });
 
     res.send(pdfBuffer);
