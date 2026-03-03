@@ -123,8 +123,8 @@ const deleteOfferById= async(req,res)=>{
     }
 }
 //domain/offer/pdf
-const generateOfferPdf=async(req,res)=>{
-try {
+const generateOfferPdf = async (req, res) => {
+  try {
     const { html, fileName } = req.body;
 
     if (!html) {
@@ -132,18 +132,16 @@ try {
     }
 
     const browser = await puppeteer.launch({
-      headless: "new", // for latest puppeteer
+      headless: "new",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();
 
-    // Set content
     await page.setContent(html, {
       waitUntil: "networkidle0",
     });
 
-    // Generate PDF
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
@@ -159,17 +157,16 @@ try {
 
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${fileName}"`,
+      "Content-Disposition": `attachment; filename="${fileName || "offer.pdf"}"`,
       "Content-Length": pdfBuffer.length,
     });
 
     res.send(pdfBuffer);
   } catch (error) {
-    console.log("PDF generation error:", error);
+    console.error("PDF generation error:", error);
     res.status(500).json({ message: "Failed to generate PDF" });
   }
-}
-
+};
 
 
 module.exports={createOffer,getOffersByUser,editOffer,getOfferById,deleteOfferById,generateOfferPdf}
