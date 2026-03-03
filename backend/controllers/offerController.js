@@ -1,8 +1,5 @@
-
-
 const Offer= require("../models/OfferModel");
-const puppeteer = require("puppeteer-core");
-//route: domain/quote/create
+
 const createOffer=async(req,res)=>{
     const {clientName,clientEmail,clientAddress,quoteNumber,quoteDate,kindAttention,subject,items,subtotal,taxRate,taxAmount,notes}= req.body
     const createdBy= req.user.id; //from auth middleware
@@ -124,6 +121,11 @@ const deleteOfferById= async(req,res)=>{
 //domain/offer/pdf
 
 
+
+
+const chromium = require("@sparticuz/chromium");
+const puppeteerCore = require("puppeteer-core");
+
 const generateOfferPdf = async (req, res) => {
   try {
     const { html, fileName } = req.body;
@@ -132,10 +134,23 @@ const generateOfferPdf = async (req, res) => {
       return res.status(400).json({ message: "HTML is required" });
     }
 
-    const browser = await puppeteer.launch({
-      executablePath: process.env.CHROME_BIN || "/usr/bin/chromium-browser",
+    const isProduction = !!process.env.VERCEL;
+
+    let executablePath;
+
+    if (isProduction) {
+      // Vercel environment
+      executablePath = await chromium.executablePath();
+    } else {
+      // Local environment
+      const puppeteer = require("puppeteer");
+      executablePath = puppeteer.executablePath();
+    }
+
+    const browser = await puppeteerCore.launch({
+      args: isProduction ? chromium.args : [],
+      executablePath,
       headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();
@@ -163,11 +178,18 @@ const generateOfferPdf = async (req, res) => {
     });
 
     res.send(pdfBuffer);
+
   } catch (error) {
     console.error("PDF generation error:", error);
-    res.status(500).json({ message: "Failed to generate PDF" });
+    res.status(500).json({
+      message: "Failed to generate PDF",
+      error: error.message,
+    });
   }
 };
 
 
+
+
 module.exports={createOffer,getOffersByUser,editOffer,getOfferById,deleteOfferById,generateOfferPdf}
+
