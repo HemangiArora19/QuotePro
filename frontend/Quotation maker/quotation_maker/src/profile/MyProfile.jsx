@@ -8,7 +8,12 @@ const MyProfile = () => {
   const [isBusinessEditing, setIsBusinessEditing] = useState(false);
   const [isContactEditing, setIsContactEditing] = useState(false);
   const [logoFile, setLogoFile] = useState(null);
-
+  const[gst,setGST]=useState("");
+  const[bankName,setBankName]=useState("");
+  const[accountNumber,setAccountNumber]=useState("");
+  const[ifscCode,setIfscCode]=useState("");
+  const[accName,setAccName]=useState("");
+  const[branch,setBranch]=useState("");
   const [companyName, setCompanyName] = useState('ABC Construction Co.');
   const [companyLogo, setCompanyLogo] = useState(null);
   const [name, setName] = useState('John Doe');
@@ -35,6 +40,12 @@ const MyProfile = () => {
         setTempEmail(user.email)
         setTempPhone(user.cPhone)
         setId(user.id)
+        setBankName(user.bankName)
+        setGST(user.gstNo)
+        setAccountNumber(user.accNo)
+        setIfscCode(user.ifscCode)
+        setAccName(user.accName)
+        setBranch(user.branch)
 
     }
 
@@ -85,6 +96,12 @@ const uploadLogo = async () => {
     await api.post("/user/bussEdit", {
       companyName: tempCompanyName,
       companyLogo: logoUrl,
+      bankName: bankName,
+      gst: gst,
+      accountNumber: accountNumber,
+      ifscCode: ifscCode,
+      accName: accName,
+      branch: branch,
       id,
     });
 
@@ -222,68 +239,161 @@ const uploadLogo = async () => {
               </div>
 
               {!isBusinessEditing ? (
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-gray-500 mb-2 text-sm">Company Name</p>
-                    <p className="text-gray-800 font-medium">{companyName}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 mb-2 text-sm">Company Logo</p>
-                    <div className="flex items-center gap-4">
-                      <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-2 border-dashed border-indigo-300 overflow-hidden">
-                        {companyLogo ? (
-                          <img src={companyLogo} className="w-full h-full object-cover rounded-lg" alt="Company Logo" />
-                        ) : (
-                          <svg className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="space-y-4">
+  <div>
+    <p className="text-gray-500 mb-2 text-sm">Company Name</p>
+    <p className="text-gray-800 font-medium">{companyName}</p>
+  </div>
+
+  <div>
+    <p className="text-gray-500 mb-2 text-sm">GST Number</p>
+    <p className="text-gray-800 font-medium">{gst || "—"}</p>
+  </div>
+
+  <div>
+    <p className="text-gray-500 mb-2 text-sm">Bank Name</p>
+    <p className="text-gray-800 font-medium">{bankName || "—"}</p>
+  </div>
+
+  <div>
+    <p className="text-gray-500 mb-2 text-sm">Account Holder Name</p>
+    <p className="text-gray-800 font-medium">{accName || "—"}</p>
+  </div>
+
+  <div>
+    <p className="text-gray-500 mb-2 text-sm">Account Number</p>
+    <p className="text-gray-800 font-medium">{accountNumber || "—"}</p>
+  </div>
+
+  <div>
+    <p className="text-gray-500 mb-2 text-sm">IFSC Code</p>
+    <p className="text-gray-800 font-medium">{ifscCode || "—"}</p>
+  </div>
+
+  <div>
+    <p className="text-gray-500 mb-2 text-sm">Branch</p>
+    <p className="text-gray-800 font-medium">{branch || "—"}</p>
+  </div>
+
+  <div>
+    <p className="text-gray-500 mb-2 text-sm">Company Logo</p>
+    <div className="flex items-center gap-4">
+      <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-2 border-dashed border-indigo-300 overflow-hidden">
+        {companyLogo ? (
+          <img src={companyLogo} className="w-full h-full object-cover rounded-lg" alt="Company Logo" />
+        ) : (
+          <span className="text-gray-400 text-sm">No Logo</span>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
+
               ) : (
                 <div className="space-y-4">
-                  <div>
-                    <label className="text-gray-500 mb-2 text-sm block">Company Name</label>
-                    <input
-                      type="text"
-                      value={tempCompanyName}
-                      onChange={(e) => setTempCompanyName(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-gray-500 mb-2 text-sm block">Company Logo</label>
-                    <div className="flex items-center gap-4">
-                      <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-2 border-dashed border-indigo-300 overflow-hidden">
-                        {tempLogo || companyLogo ? (
-                          <img src={tempLogo || companyLogo} className="w-full h-full object-cover rounded-lg" alt="Company Logo" />
-                        ) : (
-                          <svg className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                          </svg>
-                        )}
-                      </div>
-                      <div>
-                        <input
-                          type="file"
-                          id="logoInput"
-                          accept="image/*"
-                          onChange={handleLogoUpload}
-                          className="hidden"
-                        />
-                        <button
-                          onClick={() => document.getElementById('logoInput').click()}
-                          className="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition"
-                        >
-                          Upload Logo
-                        </button>
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">Recommended: Square image, max 2MB</p>
-                  </div>
-                  <div className="flex gap-3 pt-2">
+  <div>
+    <label className="text-gray-500 mb-2 text-sm block">Company Name</label>
+    <input
+      type="text"
+      value={tempCompanyName}
+      onChange={(e) => setTempCompanyName(e.target.value)}
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+    />
+  </div>
+
+  <div>
+    <label className="text-gray-500 mb-2 text-sm block">GST Number</label>
+    <input
+      type="text"
+      value={gst}
+      onChange={(e) => setGST(e.target.value)}
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+    />
+  </div>
+
+  <div>
+    <label className="text-gray-500 mb-2 text-sm block">Bank Name</label>
+    <input
+      type="text"
+      value={bankName}
+      onChange={(e) => setBankName(e.target.value)}
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+    />
+  </div>
+
+  <div>
+    <label className="text-gray-500 mb-2 text-sm block">Account Holder Name</label>
+    <input
+      type="text"
+      value={accName}
+      onChange={(e) => setAccName(e.target.value)}
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+    />
+  </div>
+
+  <div>
+    <label className="text-gray-500 mb-2 text-sm block">Account Number</label>
+    <input
+      type="text"
+      value={accountNumber}
+      onChange={(e) => setAccountNumber(e.target.value)}
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+    />
+  </div>
+
+  <div>
+    <label className="text-gray-500 mb-2 text-sm block">IFSC Code</label>
+    <input
+      type="text"
+      value={ifscCode}
+      onChange={(e) => setIfscCode(e.target.value)}
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+    />
+  </div>
+
+  <div>
+    <label className="text-gray-500 mb-2 text-sm block">Branch</label>
+    <input
+      type="text"
+      value={branch}
+      onChange={(e) => setBranch(e.target.value)}
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+    />
+  </div>
+
+  {/* logo section stays same */}
+  <div>
+      <label className="text-gray-500 mb-2 text-sm block">Company Logo</label>
+      <div className="flex items-center gap-4">
+        <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-2 border-dashed border-indigo-300 overflow-hidden">
+          {tempLogo || companyLogo ? (
+            <img
+              src={tempLogo || companyLogo}
+              className="w-full h-full object-cover rounded-lg"
+              alt="Company Logo"
+            />
+          ) : (
+            <span className="text-gray-400 text-sm">No Logo</span>
+          )}
+        </div>
+
+        <input
+          type="file"
+          id="logoInput"
+          accept="image/*"
+          onChange={handleLogoUpload}
+          className="hidden"
+        />
+
+        <button
+          type="button"
+          onClick={() => document.getElementById("logoInput").click()}
+          className="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition"
+        >
+          Upload Logo
+        </button>
+      </div>
+      <div className="flex gap-3 pt-2">
                     <button
                       onClick={saveBusinessInfo}
                       className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition"
@@ -297,7 +407,10 @@ const uploadLogo = async () => {
                       Cancel
                     </button>
                   </div>
-                </div>
+    </div>
+
+</div>
+
               )}
             </div>
 

@@ -132,6 +132,7 @@ const invoiceSchema= new mongoose.Schema(
     totals: {
       subtotal: Number,
       gst: Number,
+      fri:Number,
       total: Number,
     },
 

@@ -86,7 +86,14 @@ const userLogin = async(req, res) => {
         letterpad: findUser.letterpad,
         address: findUser.address,
         cName: findUser.cName,
-        cPhone: findUser.cPhone
+        cPhone: findUser.cPhone,
+        bankName: findUser.bankName,
+        gstNo: findUser.gstNo,
+        accNo: findUser.accNo,
+        ifscCode: findUser.ifscCode,
+        accName: findUser.accName,
+        branch: findUser.branch,
+
       }
     });
   } catch(err) {
@@ -144,13 +151,19 @@ const contactEdit = async (req, res) => {
 
 const bussEdit= async(req,res)=>{
   try{
-   const {companyName,companyLogo,id}=req.body  
-   if(!companyName||!companyLogo){    
+   const {companyName,companyLogo,bankName,gst,accountNumber,ifscCode,accName,branch,id}=req.body  
+   if(!companyName||!companyLogo||!bankName||!gst||!accountNumber||!ifscCode||!accName||!branch||!id){    
     return res.status(400).json({message:"Pls enter all the details"})
     }
     const user= await User.findByIdAndUpdate(id,{
       cName:companyName,
-      letterpad:companyLogo
+      letterpad:companyLogo,
+      bankName,
+      gstNo:gst,
+      accNo:accountNumber,
+      ifscCode,
+      accName,
+      branch
     },{new:true})
     if(!user){
       res.status(404).json({message:"User not found"})

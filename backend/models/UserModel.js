@@ -31,7 +31,34 @@ const userSchema= new mongoose.Schema(
         cPhone:{
             type:String,
             require:true
-        }
+        },
+        bankName:{
+            type:String,
+            required:true
+        },
+       
+        gstNo:{
+            type:String,
+            required:true   
+        },
+        accNo:{
+            type:String,
+            required:true
+        },
+        ifscCode:{
+            type:String,
+            required:true
+        },
+        accName:{
+            type:String,
+            required:true
+        },
+        branch:{
+            type:String,
+            required:true
+         }
+        
+
 
     }
 )

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../axios/axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router';
+import Navbar from '../Navbar/Navbar';
 
 export default function DisplayInvoice() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +23,15 @@ const navigate=useNavigate()
     try {
       // Replace with your actual API call
       const response = await api.get('/invoice/get');
+      
+ if(response.status==401){
+  Swal.fire({
+    icon:"error",
+    title:"Invoice Error",
+    text:"Unauthrized Access"
+  })
+  navigate('/login')
+ }
       setInvoices(response.data.invoice || []);
       
      
@@ -31,13 +41,14 @@ const navigate=useNavigate()
    
     } catch (error) {
       console.error('Failed to fetch invoices:', error);
+      navigate('/login')
       setLoading(false);
     }
   };
 const handleEdit=(invoice)=>{
   try{
      //navigate
-     navigate('/create_invoice',{state:{invoice}})
+     navigate('/create_invoice',{state:{invoice,isEdit:true}})
 
   }catch(err){
     console.log("Edit error:",err)
@@ -188,6 +199,7 @@ const handleEdit=(invoice)=>{
 
   return (
     <div className="bg-gray-50 min-h-screen">
+      <Navbar/>
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
@@ -196,7 +208,9 @@ const handleEdit=(invoice)=>{
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Invoices</h1>
               <p className="text-sm text-gray-600 mt-1">{invoices.length} total invoices</p>
             </div>
-            <button className="bg-indigo-600 text-white px-4 sm:px-6 py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg w-full sm:w-auto">
+            <button className="bg-indigo-600 text-white px-4 sm:px-6 py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg w-full sm:w-auto"
+            onClick={()=>{navigate("/create_invoice")}}
+            >
               <svg className="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
               </svg>
@@ -290,7 +304,7 @@ const handleEdit=(invoice)=>{
                     >
                       View
                     </button>
-                    <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition">
+                    <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition" onClick={()=>handleEdit(inv)}>
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                       </svg>
@@ -363,7 +377,7 @@ const handleEdit=(invoice)=>{
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                             </svg>
                           </button>
-                          <button className="text-gray-600 hover:text-gray-900 transition" title="Edit" onClick={()=>{handleEdit(inv)}}>
+                          <button className="text-gray-600 hover:text-gray-900 transition" title="Edit" onClick={()=>handleEdit(inv)}>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                             </svg>

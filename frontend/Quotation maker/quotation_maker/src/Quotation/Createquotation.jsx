@@ -655,7 +655,7 @@ const handleSubmit=async()=>{
               </div>
               <span className="text-2xl font-bold text-gray-800">QuotePro</span>
             </div>
-            <button className="px-6 py-2 text-gray-600 hover:text-gray-800 transition font-medium">
+            <button className="px-6 py-2 text-gray-600 hover:text-gray-800 transition font-medium" onClick={()=>{navigate("/view_quote")}}>
               ← Back
             </button>
           </div>
