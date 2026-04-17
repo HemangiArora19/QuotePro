@@ -179,7 +179,7 @@ export default function ViewEditSearch() {
 
                     <div className="flex flex-col md:items-end gap-3">
                       <div className="text-2xl font-bold text-blue-600">
-                        ${(quotation?.subtotal + quotation?.taxAmount).toLocaleString()}
+                        ₹{(quotation?.subtotal + quotation?.taxAmount).toLocaleString()}
                       </div>
                       <div className="flex gap-2">
                         <button
