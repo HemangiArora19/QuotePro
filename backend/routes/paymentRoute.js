@@ -355,7 +355,7 @@ const paymentRoute = express.Router();
 const { google } = require("googleapis");
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: "./google.example.json",
+  keyFile: "./google.json",
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 
