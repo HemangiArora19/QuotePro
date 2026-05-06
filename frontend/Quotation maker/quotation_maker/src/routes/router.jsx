@@ -12,6 +12,8 @@ import MyProfile from "../profile/MyProfile";
 import TaxInvoice from "../component/TaxInvoice";
 import CreateEditInvoice from "../Invoice/CreateEditInvoice";
 import DisplayInvoice from "../Invoice/DisplayInvoice";
+import PaymentRegister from "../paymenteReciept/Paymentregister";
+import Dashboard from "../dashboard/Dashboard";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -43,6 +45,10 @@ const router = createBrowserRouter([
         element: <PreviewQuotation />,
       },
       {
+      path: "/dashboard",
+      element:<Dashboard/>,
+      },
+      {
         path:"/profile",
         element:<MyProfile/>
       },
@@ -57,7 +63,12 @@ path:"/preview_invoice",
       {
         path:"/display_invoice",
         element:<DisplayInvoice/>
-      }
+      },
+      {
+        path:"/payment_record",
+        element:<PaymentRegister/>
+      },
+      
       
     ],
   },

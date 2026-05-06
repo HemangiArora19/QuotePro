@@ -541,7 +541,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4">
             {isLoggedIn ? (
               <>
-                <Link to="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
+                <Link to="/dashboard" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
                   Dashboard
                 </Link>
                 <Link to="/view_quote" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
@@ -596,6 +596,9 @@ const Navbar = () => {
                       </div>
                       <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
                         My Profile
+                      </Link>
+                      <Link to="/payment_record" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                        Payment Record
                       </Link>
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         <button
@@ -678,7 +681,7 @@ const Navbar = () => {
                 </div>
 
                 {/* ✅ Mobile links match desktop links exactly */}
-                <Link to="/" onClick={() => setShowMobileMenu(false)}
+                <Link to="/dashboard" onClick={() => setShowMobileMenu(false)}
                   className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
                   Dashboard
                 </Link>
@@ -689,6 +692,10 @@ const Navbar = () => {
                 <Link to="/display_invoice" onClick={() => setShowMobileMenu(false)}
                   className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
                   Invoices
+                </Link>
+                <Link to="/payment_record" onClick={() => setShowMobileMenu(false)}
+                  className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">
+                  Payment Reciept
                 </Link>
                 <Link to="/profile" onClick={() => setShowMobileMenu(false)}
                   className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition rounded-md">

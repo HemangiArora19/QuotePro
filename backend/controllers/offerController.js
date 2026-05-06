@@ -1,42 +1,115 @@
 const Offer= require("../models/OfferModel");
 
-const createOffer=async(req,res)=>{
-    const {clientName,clientEmail,clientAddress,quoteNumber,quoteDate,kindAttention,subject,items,subtotal,taxRate,taxAmount,notes}= req.body
-    const createdBy= req.user.id; //from auth middleware
-    try{
-        if(!clientName||!clientEmail||!clientAddress||!quoteNumber||!quoteDate||!items||!subtotal){
-            return res.status(400).send("Pls enter all the details")
+// const createOffer=async(req,res)=>{
+//     const {clientName,clientEmail,clientAddress,quoteNumber,quoteDate,kindAttention,subject,items,subtotal,taxRate,taxAmount,notes}= req.body
+//     const createdBy= req.user.id; //from auth middleware
+//     try{
+//         if(!clientName||!clientEmail||!clientAddress||!quoteNumber||!quoteDate||!items||!subtotal){
+//             return res.status(400).send("Pls enter all the details")
 
-        }
-        //check quoteNumber is there in db
-        const existingOffer= await Offer.findOne({quoteNumber})
-        if(existingOffer){
-            return res.status(400).send("Offer with this quote number already exist")
-        }
-        //create new offer
-        const newOffer= await Offer.create({
-            clientName,
-            clientEmail,
-            clientAddress,
-            quoteNumber,
-            quoteDate,
-            kindAttention,
-            subject,
-            items,
-            subtotal,
-            taxRate,
-            taxAmount,
-            notes,
-            createdBy
-        })
-        res.status(201).send({
-            message:"Offer created successfully",
-            data:newOffer
-        })
-    }catch(err){
-        res.status(500).send("Error creating offer")
+//         }
+//         //check quoteNumber is there in db
+//         const existingOffer= await Offer.findOne({quoteNumber})
+//         if(existingOffer){
+//             return res.status(400).send("Offer with this quote number already exist")
+//         }
+//         //create new offer
+//         const newOffer= await Offer.create({
+//             clientName,
+//             clientEmail,
+//             clientAddress,
+//             quoteNumber,
+//             quoteDate,
+//             kindAttention,
+//             subject,
+//             items,
+//             subtotal,
+//             taxRate,
+//             taxAmount,
+//             notes,
+//             createdBy
+//         })
+//         res.status(201).send({
+//             message:"Offer created successfully",
+//             data:newOffer
+//         })
+//     }catch(err){
+//         res.status(500).send("Error creating offer",err)
+//     }
+// }
+
+const createOffer = async (req, res) => {
+  try {
+    const {
+      clientName,
+      clientEmail,
+      clientAddress,
+      quoteNumber,
+      quoteDate,
+      kindAttention,
+      subject,
+      items,
+      subtotal,
+      taxRate,
+      taxAmount,
+      notes
+    } = req.body;
+
+    const createdBy = req.user?.id;
+
+    // Basic validation
+    if (
+      !clientName ||
+      !clientEmail ||
+      !clientAddress ||
+      !quoteNumber ||
+      !quoteDate ||
+      !Array.isArray(items) || items.length === 0 ||
+      subtotal === undefined
+    ) {
+      return res.status(400).json({
+        message: "Please provide all required fields"
+      });
     }
-}
+
+    // Check duplicate quotation number
+    const existingOffer = await Offer.findOne({ quoteNumber });
+    if (existingOffer) {
+      return res.status(400).json({
+        message: "Offer with this quote number already exists"
+      });
+    }
+
+    // Create offer
+    const newOffer = await Offer.create({
+      clientName,
+      clientEmail,
+      clientAddress,
+      quoteNumber,
+      quoteDate,
+      kindAttention,
+      subject,
+      items,
+      subtotal,
+      taxRate: taxRate || 0,
+      taxAmount: taxAmount || 0,
+      notes,
+      createdBy
+    });
+
+    return res.status(201).json({
+      message: "Offer created successfully",
+      data: newOffer
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      message: "Error creating offer",
+      error: err.message
+    });
+  }
+};
+
 //route:domain/offer/get/:userId
 const getOffersByUser=async(req,res)=>{
 const userId= req.params.userId;
