@@ -1,13 +1,22 @@
-{
-  "type": "service_account",
-  "project_id": "keen-zenith-462012-g9",
-  "private_key_id": "4c1b6234f1b9e8601e182e373c8805fa260146aa",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC2p2DTGRTSZB37\nzyI3xYSNsgkhwbIFBhGGhsNFWCINxeIYyP0AW88g5Vt4xJHVc53fm0yNYANxxMMg\nNFE8vr7188mAbI2k8b5TfzSHYpEOq/5zoAY/JpJtxZK/ZpNFCGe5BjfgLKOFXSvF\nEx6XPkYjhipZIP9GCoVi3P2ABHK2AaorXxzp+IOIEZOtG9OzjCSDZnzotdBCiMUY\ntjjFUnRb7bY3Dm46wfHufFpqUxpCq5vkMXEImeH3zINwdav6bmHopVxsbA/SVeM2\nvG0bk+LYe7ZRtSNN2pPaAFv+tidt+WMIj53Qf5reyrwJTQbExW/um52RanXaYbPj\nqyc+/1ynAgMBAAECggEAVdihJ1Y4dRHdDcaynGfW/wnYROdWlgneHs4j5OmhR7vj\noiaE0rBTz3A856vrptjqMHg7KI8hz0zdMLumGtjDw7FK2XMrt4RvIas9swvehXjM\n5OcnSHMGi1U6vX6mZOGobku/4zrXuAysT7nGvOrl6DhcmvtpPzAetPKMqqhsiaG+\nUYbu6BqtZy1dlFloi4CENK27JHqAeYEMaq2TbxuWd26NnfM628pzgkLs+Mc/GY4O\n7ysnJd9UN6sqhS6K3ltpz8upfyjn1QtDmDL+VOPQuEPuwqYUW5+349XmWNZ4Zuob\nMzzx7JHnVde9nkE0E5LCWf4dVE/TyFZZ1Q5Tvh+UwQKBgQDvwqYHxtv0tEDfQP8I\ndkuSKNcTHR+PiDsQ7LHDe66/wY0+hYpUY+YH6Bf8KhMA9QhzQnKtlh0jNStB1WHz\n7DAPGJzUM8nOsK9AZQLUYmrWCSraUhN3Xm/IuIIGF2vGrVPkbNTADkyoIOySwFjV\nfGSeDTYFBoIa36CvD6eQpZFRNwKBgQDDBoZQgN1hcyIyloH7pwcYHryxopUqGtEJ\nh5s4sZY6dDQcTMLgatpkBtZWRlUTwuomAw0mzomgbtNN78aCCtVisYkpTRNtaeYg\nvNNsV7xgb5loPG3NO24nvMOdo6GI80pWQTyo/KC4/3eSq530Ciut0gizEXjebWFW\n6fzEOUrIEQKBgQCs43WKAhG2IQzucBX3aiYQXTbJ56RMgfXlvGhrCBL4338UaINZ\nWzgS14AEK+rMM+VGB9Jd7fNQ4hQxQseBdv0oxZzBQB7z1mBpVO13bQiREsc96xVy\nbDy7RqEr91OWToJCI2A+pZENY8B0ChOEzlBX0Dr14L2M11ktI2K3YUyqfQKBgCxp\nM/TpI4Cpg0QZ2gfAhXEMrtOUvnsUGD4fT02dwyQUijlXkZkhPBJDLFQBOCaD4GY/\nk6MerWCHXD8HNyEt7mHHJADvuFjWIL2bwlmNsSwUvc5q1GZD/lW2OqWPOZ3CKU9z\nE6k3vjHimwwfYJzOJBw1FB4TAH9GUUBFkHXuxgTBAoGBAKBZCP8ScuSnfqRz3AfR\noSjx6K+h1/fFu2sECZy37RudQ6PvUkz0g+mpN1jVli9VqDlW+NU6UnPUZJkh029v\ncU20DH07r6fNovvmpNNbWLfw2MV1DqsTw5OVYZwlFwVTOBJPemK7BvmepsUPpp2L\nL0sluz7K/wYDcdjzm2W4TDkU\n-----END PRIVATE KEY-----\n",
-  "client_email": "coding-excel-demo@keen-zenith-462012-g9.iam.gserviceaccount.com",
-  "client_id": "115124819425951188966",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/coding-excel-demo%40keen-zenith-462012-g9.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
-}
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const google = {
+  type: process.env.type,
+  project_id: process.env.project_id,
+  private_key_id: process.env.private_key_id,
+  private_key: process.env.private_key?.replace(/\\n/g, "\n"),
+  client_email: process.env.client_email,
+  client_id: process.env.client_id,
+  auth_uri: process.env.auth_uri,
+  token_uri: process.env.token_uri,
+  auth_provider_x509_cert_url:
+    process.env.auth_provider_x509_cert_url,
+  client_x509_cert_url:
+    process.env.client_x509_cert_url,
+  universe_domain: process.env.universe_domain,
+};
+
+export default google;
+
