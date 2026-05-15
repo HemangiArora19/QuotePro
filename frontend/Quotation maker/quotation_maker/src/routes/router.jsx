@@ -14,7 +14,7 @@ import CreateEditInvoice from "../Invoice/CreateEditInvoice";
 import DisplayInvoice from "../Invoice/DisplayInvoice";
 import PaymentRegister from "../paymenteReciept/Paymentregister";
 import Dashboard from "../dashboard/Dashboard";
-import ReceiptRegister from "../receiptRegister/receiptRegister";
+import ReceiptRegister from "../receiptRegister/ReceiptRegister";
 const router = createBrowserRouter([
   {
     path: "/",
